@@ -17,7 +17,7 @@
     <script type="text/javascript" src="/eon-chart.js"></script>
     <script type="text/javascript" src="https://pubnub.github.io/eon/v/eon/1.0.0/eon.js"></script>
     <link type="text/css" rel="stylesheet" href="https://pubnub.github.io/eon/v/eon/1.0.0/eon.css"/>
-    <title>Jumping Jacks</title>
+    <title>Burpee</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -28,7 +28,7 @@
 
                 <!-- 스퀏 카운터-->
                 <div class="headline">
-                    <div class="small">JUMP</div>Counter
+                    <div class="small">Burpee</div>Counter
                 
                 </div>
                 <div class="circle-big">
@@ -76,13 +76,11 @@
                 </div>
         </div>
 
-        <h1>Jumping Jacks</h1>
+        <h1>Burpee</h1>
        
         <!-- Customize-->
         <div>
         	 <button id="autoClickBtn" class="btn btn-primary" type="button" onclick="init()">Let's Go</button>
-			<label for="MaxRep">Num of Rep:</label>
-		    <input type="text" maxlength="3" size="3" id="" name="" value="">
 		</div>
         
         <div><canvas id="canvas"></canvas></div>
@@ -150,7 +148,9 @@
         // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/pose
 
         // the link to your model provided by Teachable Machine export panel
-        const URL = "./models/JUMPINGJACKS_model/my-pose-model/";
+        // Class 1. BURPEE_DOWN (푸쉬업 굽힌/안굽힌)
+		// Class 2. BURPEE_UP
+	    const URL = "./models/BURPEE_model/my-pose-model/";
         let model, webcam, ctx, labelContainer, maxPredictions;
 
         window.onload = function(){
@@ -213,8 +213,8 @@
             const prediction = await model.predict(posenetOutput);
             
             // 10% 마이너스 하는게 화면으로는 10% + 
-            if(count==100){
-                location.replace("Athene_2.html")
+            if(count==10){
+                location.replace("Athene_3.html")
             }
             // prediction[0] -> stand_stance
             // prediction[1] -> squat_stance
@@ -238,8 +238,8 @@
             // estimatePose can take in an image, video or canvas html element
             
             if (prediction[0].probability.toFixed(2) >= 0.85) {
-                if (status == "squat") {
-                    count++
+                if (status == "do") {
+                    count++;
                     
                     progress = progress-32.7
                     if(progress <= 0) {
@@ -261,17 +261,17 @@
                 status = "stand"
                 await sleep(10);
             } else if (prediction[1].probability.toFixed(2) >= 0.85) {
-                status = "squat"
+                status = "do"
                 await sleep(10);
             }
 
 
             for (let i = 0; i < maxPredictions; i++) {
                 if(i==0){
-                    const classPrediction = "STAND " + ": " + prediction[i].probability.toFixed(2);
+                    const classPrediction = "DOWN " + ": " + prediction[i].probability.toFixed(2);
                     labelContainer.childNodes[i].innerHTML = classPrediction;   
                 } else {
-                    const classPrediction = "JUMP "  + ": " + prediction[i].probability.toFixed(2);
+                    const classPrediction = "UP "  + ": " + prediction[i].probability.toFixed(2);
                     labelContainer.childNodes[i].innerHTML = classPrediction;
                 }
             }

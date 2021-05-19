@@ -17,7 +17,7 @@
     <script type="text/javascript" src="/eon-chart.js"></script>
     <script type="text/javascript" src="https://pubnub.github.io/eon/v/eon/1.0.0/eon.js"></script>
     <link type="text/css" rel="stylesheet" href="https://pubnub.github.io/eon/v/eon/1.0.0/eon.css"/>
-    <title>Jumping Jacks</title>
+    <title>Lunge</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -28,7 +28,7 @@
 
                 <!-- 스퀏 카운터-->
                 <div class="headline">
-                    <div class="small">JUMP</div>Counter
+                    <div class="small">Lunge</div>Counter
                 
                 </div>
                 <div class="circle-big">
@@ -76,7 +76,7 @@
                 </div>
         </div>
 
-        <h1>Jumping Jacks</h1>
+        <h1>Lunge</h1>
        
         <!-- Customize-->
         <div>
@@ -150,7 +150,7 @@
         // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/pose
 
         // the link to your model provided by Teachable Machine export panel
-        const URL = "./models/JUMPINGJACKS_model/my-pose-model/";
+        const URL = "./models/LUNGE_model(new)/my-pose-model/";
         let model, webcam, ctx, labelContainer, maxPredictions;
 
         window.onload = function(){
@@ -205,6 +205,8 @@
         var wprobprog = 327
         var status = "stand"
         var count = 0
+        var music = "stop"
+        var quit = 0
 
         async function predict() {
 
@@ -212,10 +214,20 @@
             // Prediction 2: run input through teachable machine classification model
             const prediction = await model.predict(posenetOutput);
             
-            // 10% 마이너스 하는게 화면으로는 10% + 
-            if(count==100){
-                location.replace("Athene_2.html")
+
+            // 50개 하면 -> result.html
+            if(count==50){
+                // 오디오 "플레이 고생했어요 !"
+                // Athene workout이 끝났으니 결과창으로 이동 .
+                var audio = new Audio('./data/Voice/한글/유학생/고생했어요.mp3');
+                audio.play();
+                location.replace("Agon_4.html");
+                // location.replace("Athene_4.html")
             }
+
+
+            // 10% 마이너스 하는게 화면으로는 10% + 
+            
             // prediction[0] -> stand_stance
             // prediction[1] -> squat_stance
             // prediction[2] -> bad_posture 	// 머리를 오른쪽으로 허리 숙이기
@@ -224,11 +236,11 @@
 
             // SQUAT COUNTER JAVASCRIPT
             // GOOD POSTURE PERCENTAGE
-            $('#probability').html( prediction[1].probability.toFixed(2) * 100 );
+            $('#probability').html( prediction[0].probability.toFixed(2) * 100 );
             $('.probprog').css('stroke-dashoffset', probprog - (probprog * prediction[1].probability.toFixed(2)));
 
             // BAD POSTURE PERCENTAGE 
-            $('#wprobability').html( prediction[0].probability.toFixed(2) * 100 );
+            $('#wprobability').html( prediction[1].probability.toFixed(2) * 100 );
             $('.wprobprog').css('stroke-dashoffset', wprobprog - (wprobprog * prediction[0].probability.toFixed(2)));
 
             //
@@ -237,7 +249,7 @@
             // Prediction #1: run input through posenet
             // estimatePose can take in an image, video or canvas html element
             
-            if (prediction[0].probability.toFixed(2) >= 0.85) {
+            if (prediction[0].probability.toFixed(2) >= 0.95) {
                 if (status == "squat") {
                     count++
                     
@@ -254,27 +266,30 @@
                         audio.play();
                         await sleep(100);   
                     } else {
-                    	var audio = new Audio('./data/Voice/한글/유학생/' + count%10 +'_유학생.mp3');
-                    	audio.play();
+                        var audio = new Audio('./data/Voice/한글/유학생/' + count%10 +'_유학생.mp3');
+                        audio.play();
                     }
                 }
                 status = "stand"
                 await sleep(10);
-            } else if (prediction[1].probability.toFixed(2) >= 0.85) {
+            } else if (prediction[1].probability.toFixed(2) >= 0.95) {
                 status = "squat"
                 await sleep(10);
             }
 
 
-            for (let i = 0; i < maxPredictions; i++) {
-                if(i==0){
-                    const classPrediction = "STAND " + ": " + prediction[i].probability.toFixed(2);
-                    labelContainer.childNodes[i].innerHTML = classPrediction;   
-                } else {
-                    const classPrediction = "JUMP "  + ": " + prediction[i].probability.toFixed(2);
-                    labelContainer.childNodes[i].innerHTML = classPrediction;
-                }
-            }
+            
+
+	        for (let i = 0; i < maxPredictions; i++) {
+	            if(i!=0){
+		            const classPrediction = "DOWN " + ": " + prediction[i].probability.toFixed(2);
+		            labelContainer.childNodes[i].innerHTML = classPrediction;	
+	            } else {
+	            	const classPrediction = "UP "  + ": " + prediction[i].probability.toFixed(2);
+	            	labelContainer.childNodes[i].innerHTML = classPrediction;
+	            }
+	        }
+            
 
             // finally draw the poses
             drawPose(pose);
