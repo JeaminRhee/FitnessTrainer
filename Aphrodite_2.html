@@ -81,8 +81,6 @@
         <!-- Customize-->
         <div>
         	 <button id="autoClickBtn" class="btn btn-primary" type="button" onclick="init()">Let's Go</button>
-			<label for="MaxRep">Num of Rep:</label>
-		    <input type="text" maxlength="3" size="3" id="" name="" value="">
 		</div>
         
         <div><canvas id="canvas"></canvas></div>
@@ -213,8 +211,8 @@
             const prediction = await model.predict(posenetOutput);
             
             // 10% 마이너스 하는게 화면으로는 10% + 
-            if(count==100){
-                location.replace("Athene_3.html")
+            if(count==200){
+                location.replace("Result.html")
             }
             // prediction[0] -> stand_stance
             // prediction[1] -> squat_stance
@@ -263,7 +261,7 @@
             } else if (prediction[1].probability.toFixed(2) >= 0.85) {
                 status = "squat"
                 await sleep(10);
-            
+            }
 
 
             for (let i = 0; i < maxPredictions; i++) {
